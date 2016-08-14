@@ -27,7 +27,7 @@
 # make flip-ee = Download the eeprom file to the device, using Atmel FLIP
 #                (must have Atmel FLIP installed).
 #
-# make debug = Start either simulavr or avarice as specified for debugging, 
+# make debug = Start either simulavr or avarice as specified for debugging,
 #              with avr-gdb or avr-insight as the front end for debugging.
 #
 # make filename.s = Just compile filename.c into the assembler code only.
@@ -37,6 +37,9 @@
 #
 # To rebuild project do "make clean" then "make all".
 #----------------------------------------------------------------------------
+
+KEYMAP = poker2
+REV = CHN
 
 # Target file name (without extension).
 TARGET = gh60_lufa
