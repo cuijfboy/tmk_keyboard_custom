@@ -42,6 +42,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* Set 0 if debouncing isn't needed */
 #define DEBOUNCE    5
 
+#define BACKLIGHT_CUSTOM
+
 /* number of backlight levels */
 #ifdef BREATHING_LED_ENABLE
 #define BACKLIGHT_LEVELS 8

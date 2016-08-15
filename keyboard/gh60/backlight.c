@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #else
 #include "breathing_led.h"
 #endif
-#include "action.h"
+#include "hook.h"
 
 #ifdef BACKLIGHT_ENABLE
 
@@ -55,6 +55,7 @@ void backlight_enable(void)
 {
 #ifdef SOFTPWM_LED_ENABLE
     softpwm_enable();
+    softpwm_led_enable_all();
 #else
 #if defined(GH60_REV_CHN)
     // Turn on PWM
@@ -81,6 +82,7 @@ void backlight_disable(void)
 {
 #ifdef SOFTPWM_LED_ENABLE
     softpwm_disable();
+    softpwm_led_disable_all();
 #else
 #if defined(GH60_REV_CHN)
     // Turn off PWM
@@ -225,7 +227,7 @@ void softpwm_led_off(uint8_t index)
 #endif
 #endif
 
-void action_keyevent(keyevent_t event)
+void hook_matrix_change(keyevent_t event)
 {
     if (backlight_mode == 7) {
         if (event.pressed) {
