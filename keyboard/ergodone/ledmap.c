@@ -1,5 +1,5 @@
 /*
-Copyright 2014 Kai Ryu <kai1103@gmail.com>
+Copyright 2016 Kai Ryu <kai1103@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,18 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef LEDMAP_ENABLE
 
 static const uint16_t ledmaps[LED_COUNT] PROGMEM = {
-    [0] = LEDMAP_CAPS_LOCK | LEDMAP_BACKLIGHT,      // CapsLock
-#ifdef NO_NUMLOCK
-    [1] = LEDMAP_BACKLIGHT,                         // NumLock
-#else
-    [1] = LEDMAP_NUM_LOCK | LEDMAP_BACKLIGHT,       // NumLock
-#endif
-#ifdef REDSCARFII_PLUS
-    [2] = LEDMAP_BACKLIGHT,                         // Backlight
-#else
-    [2] = LEDMAP_SCROLL_LOCK | LEDMAP_BACKLIGHT,    // Logo
-    [3] = LEDMAP_BACKLIGHT,                         // Backlight
-#endif
+    [0] = LEDMAP_NUM_LOCK,              // LED_A - PB5
+    [1] = LEDMAP_CAPS_LOCK,             // LED_B - PB6
+    [2] = LEDMAP_SCROLL_LOCK,           // LED_C - PB3
+    [3] = LEDMAP_LAYER(1),              // RX    - PB0
+    [4] = LEDMAP_LAYER(2),              // TX    - PD5
 };
 
 ledmap_t ledmap_get_code(uint8_t index)
@@ -40,47 +33,34 @@ ledmap_t ledmap_get_code(uint8_t index)
     return (ledmap_t) { .code = pgm_read_word(&ledmaps[index]) };
 }
 
-/* LED pin configration
- *   CapsLock:  PC7
- *   NumLock:   PE6
- *   Logo:      PC6
- *   Backlight: PB7
- */
 void ledmap_led_init(void)
 {
-    DDRC  |=  (1<<PC7);
-    PORTC |=  (1<<PC7);
-    DDRE  |=  (1<<PE6);
-    PORTE |=  (1<<PE6);
-#ifndef REDSCARFII_PLUS
-    DDRC  |=  (1<<PC6);
-    PORTC &= ~(1<<PC6);
-#endif
-    DDRB  |=  (1<<PB7);
-    PORTB &= ~(1<<PB7);
+    DDRB  |=  (1<<PB5 | 1<<PB6 | 1<<PB3);
+    PORTB &= ~(1<<PB5 | 1<<PB6 | 1<<PB3);
+    DDRB  |=  (1<<PB0);
+    PORTB |=  (1<<PB0);
+    DDRD  |=  (1<<PD5);
+    PORTD |=  (1<<PD5);
 }
 
 void ledmap_led_on(uint8_t index)
 {
     switch (index) {
         case 0:
-            PORTC &= ~(1<<PC7);
+            PORTB |=  (1<<PB5);
             break;
         case 1:
-            PORTE &= ~(1<<PE6);
+            PORTB |=  (1<<PB6);
             break;
-#ifdef REDSCARFII_PLUS
         case 2:
-            PORTB |=  (1<<PB7);
-            break;
-#else
-        case 2:
-            PORTC |=  (1<<PC6);
+            PORTB |=  (1<<PB3);
             break;
         case 3:
-            PORTB |=  (1<<PB7);
+            PORTB &= ~(1<<PB0);
             break;
-#endif
+        case 4:
+            PORTD &= ~(1<<PD5);
+            break;
     }
 }
 
@@ -88,23 +68,20 @@ void ledmap_led_off(uint8_t index)
 {
     switch (index) {
         case 0:
-            PORTC |=  (1<<PC7);
+            PORTB &= ~(1<<PB5);
             break;
         case 1:
-            PORTE |=  (1<<PE6);
+            PORTB &= ~(1<<PB6);
             break;
-#ifdef REDSCARFII_PLUS
         case 2:
-            PORTB &= ~(1<<PB7);
-            break;
-#else
-        case 2:
-            PORTC &= ~(1<<PC6);
+            PORTB &= ~(1<<PB3);
             break;
         case 3:
-            PORTB &= ~(1<<PB7);
+            PORTB |=  (1<<PB0);
             break;
-#endif
+        case 4:
+            PORTD |=  (1<<PD5);
+            break;
     }
 }
 

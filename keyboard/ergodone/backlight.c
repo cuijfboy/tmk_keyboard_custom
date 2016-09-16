@@ -1,5 +1,5 @@
 /*
-Copyright 2014 Kai Ryu <kai1103@gmail.com>
+Copyright 2016 Kai Ryu <kai1103@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,51 +28,56 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef BACKLIGHT_ENABLE
 
+void backlight_enable(void);
+void backlight_disable(void);
+inline void backlight_set_raw(uint8_t raw);
+
 static const uint8_t backlight_table[] PROGMEM = {
     0, 16, 128, 255
 };
 
-inline void backlight_set_raw(uint8_t raw);
-
-#ifdef SOFTPWM_LED_ENABLE
-#ifdef FADING_LED_ENABLE
 extern backlight_config_t backlight_config;
-#endif 
-#endif
+uint8_t backlight_brightness;
 
 /* Backlight pin configuration
- * PWM: PB7(OC1C)
+ * LED4: PB6 (D10) OC1B
  */
 #ifndef SOFTPWM_LED_ENABLE
 void backlight_enable(void)
 {
     // Turn on PWM
+    LED4_DDR |= (1<<LED4_BIT);
     cli();
-    DDRB |= (1<<PB7);
-    TCCR1A |= ( (1<<WGM10) | (1<<COM1C1) );
-    TCCR1B |= ( (1<<CS11) | (1<<CS10) );
+    TCCR1A |= ((1<<WGM10) | (1<<COM1B1));
+    TCCR1B |= ((1<<CS11) | (1<<CS10));
     sei();
 }
+#endif
+
+#ifndef SOFTPWM_LED_ENABLE
 void backlight_disable(void)
 {
     // Turn off PWM
+    LED4_DDR &= ~(1<<LED4_BIT);
     cli();
-    DDRB &= ~(1<<PB7);
-    TCCR1A &= ~( (1<<WGM10) | (1<<COM1C1) );
-    TCCR1B &= ~( (1<<CS11) | (1<<CS10) );
+    TCCR1A &= ~((1<<WGM10) | (1<<COM1B1));
+    TCCR1B &= ~((1<<CS11) | (1<<CS10));
     sei();
+    LED4_OCR = 0;
 }
 #endif
 
 void backlight_set(uint8_t level)
 {
+#ifdef SOFTPWM_LED_ENABLE
+    softpwm_enable();
+#endif
 #ifdef BREATHING_LED_ENABLE
     switch (level) {
         case 1:
         case 2:
         case 3:
 #ifdef SOFTPWM_LED_ENABLE
-            softpwm_enable();
             softpwm_led_enable_all();
 #ifdef FADING_LED_ENABLE
             fading_led_disable_all();
@@ -82,13 +87,13 @@ void backlight_set(uint8_t level)
             backlight_enable();
             breathing_led_disable();
 #endif
-            backlight_set_raw(pgm_read_byte(&backlight_table[level]));
+            backlight_brightness = pgm_read_byte(&backlight_table[level]);
+            backlight_set_raw(backlight_brightness);
             break;
         case 4:
         case 5:
         case 6:
 #ifdef SOFTPWM_LED_ENABLE
-            softpwm_enable();
             softpwm_led_enable_all();
 #ifdef FADING_LED_ENABLE
             fading_led_disable_all();
@@ -103,7 +108,6 @@ void backlight_set(uint8_t level)
 #ifdef SOFTPWM_LED_ENABLE
 #ifdef FADING_LED_ENABLE
         case 7:
-            softpwm_enable();
             softpwm_led_enable_all();
             fading_led_enable_all();
             breathing_led_disable_all();
@@ -111,7 +115,6 @@ void backlight_set(uint8_t level)
             fading_led_set_duration(3);
             break;
         case 8:
-            softpwm_enable();
             softpwm_led_enable_all();
             fading_led_enable_all();
             breathing_led_disable_all();
@@ -127,8 +130,9 @@ void backlight_set(uint8_t level)
             fading_led_disable_all();
 #endif
             breathing_led_disable_all();
+            backlight_brightness = 0;
+            backlight_set_raw(backlight_brightness);
             softpwm_led_disable_all();
-            softpwm_disable();
 #else
             breathing_led_disable();
             backlight_disable();
@@ -144,7 +148,6 @@ void backlight_set(uint8_t level)
         backlight_disable();
     }
 #endif
-
 }
 
 #ifndef SOFTPWM_LED_ENABLE
@@ -161,7 +164,6 @@ inline void backlight_set_raw(uint8_t raw)
 #ifdef SOFTPWM_LED_ENABLE
     softpwm_led_set_all(raw);
 #else
-    OCR1C = raw;
 #endif
 }
 
@@ -169,17 +171,14 @@ inline void backlight_set_raw(uint8_t raw)
 #ifdef SOFTPWM_LED_ENABLE
 void softpwm_led_init(void)
 {
-    DDRB  |=  (1<<PB7);
 }
 
 void softpwm_led_on(uint8_t index)
 {
-    PORTB |=  (1<<PB7);
 }
 
 void softpwm_led_off(uint8_t index)
 {
-    PORTB &= ~(1<<PB7);
 }
 #endif
 #endif
@@ -189,19 +188,17 @@ void softpwm_led_off(uint8_t index)
 void action_keyevent(keyevent_t event)
 {
     if (backlight_config.enable) {
-        switch (backlight_config.level) {
-            case 7:
-                if (event.pressed) {
-                    fading_led_set_delay_all(64);
-                    softpwm_led_decrease_all(32);
-                }
-                break;;
-            case 8:
-                if (event.pressed) {
-                    fading_led_set_delay_all(64);
-                    softpwm_led_increase_all(32);
-                }
-                break;
+        if (backlight_config.level == 7) {
+            if (event.pressed) {
+                fading_led_set_delay_all(64);
+                softpwm_led_decrease_all(32);
+            }
+        }
+        if (backlight_config.level == 8) {
+            if (event.pressed) {
+                fading_led_set_delay_all(64);
+                softpwm_led_increase_all(32);
+            }
         }
     }
 }

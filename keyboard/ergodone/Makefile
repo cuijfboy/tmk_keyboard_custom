@@ -39,7 +39,7 @@
 #----------------------------------------------------------------------------
 
 # Target file name (without extension).
-TARGET = RedScarfII_lufa
+TARGET = ergodone_lufa
 
 # Directory common source filess exist
 TMK_DIR = ../../tmk_core_custom
@@ -53,9 +53,8 @@ SRC =	keymap_common.c \
 	led.c \
 	backlight.c \
 	ledmap.c \
-	yc059.c \
-	rgb.c \
-	suspend.c
+	twimaster.c \
+	expander.c
 
 ifdef KEYMAP
     SRC := keymap_$(KEYMAP).c $(SRC)
@@ -105,7 +104,7 @@ ARCH = AVR8
 F_USB = $(F_CPU)
 
 # Interrupt driven control endpoint task(+60)
-OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT -DREDSCARFII_PLUS
+OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT
 
 
 # Boot Section Size in *bytes*
@@ -115,6 +114,11 @@ OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT -DREDSCARFII_PLUS
 #   LUFA bootloader  4096
 #   USBaspLoader     2048
 OPT_DEFS += -DBOOTLOADER_SIZE=4096
+
+# PCB Version
+ifdef VER
+    OPT_DEFS += -DVER_$(VER)
+endif
 
 # Additional definitions from command line
 ifdef DEFS
@@ -135,12 +139,12 @@ USB_6KRO_ENABLE = yes	# USB 6key Rollover
 #PS2_MOUSE_ENABLE = yes	# PS/2 mouse(TrackPoint) support
 #PS2_USE_BUSYWAIT = yes
 BACKLIGHT_ENABLE = yes	# Enable keyboard backlight functionality
-KEYMAP_IN_EEPROM_ENABLE = yes # Read keymap from eeprom
+KEYMAP_IN_EEPROM_ENABLE = yes	# External keymap in eeprom
 #KEYMAP_SECTION_ENABLE = yes	# Fixed address keymap for keymap editor
 SOFTPWM_LED_ENABLE = yes # Enable SoftPWM to drive backlight
 FADING_LED_ENABLE = yes # Enable fading backlight
 BREATHING_LED_ENABLE = yes # Enable breathing backlight
-LEDMAP_ENABLE = yes		# Enable LED mapping
+LEDMAP_ENABLE = yes	# Enable LED mapping
 LEDMAP_IN_EEPROM_ENABLE = yes # Read LED mapping from eeprom
 
 

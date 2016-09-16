@@ -1,5 +1,5 @@
 /*
-Copyright 2015 Kai Ryu <kai1103@gmail.com>
+Copyright 2016 Kai Ryu <kai1103@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "backlight.h"
 #include "rgb.h"
 #include "light_ws2812.h"
+#include "debug.h"
 
 #ifdef RGB_LED_ENABLE
 
@@ -39,7 +40,9 @@ static void rgb_write_config(void);
 static void rgb_read_config(void);
 static void rgb_set_level(uint8_t level);
 static void rgb_refresh(void);
+#if 0
 static void hue_to_rgb(uint16_t hue, struct cRGB *rgb);
+#endif
 static void hsb_to_rgb(uint16_t hue, uint8_t saturation, uint8_t brightness, struct cRGB *rgb);
 
 void rgb_init(void)
@@ -122,6 +125,7 @@ void rgb_step(void)
 
 void rgb_set_level(uint8_t level)
 {
+    xprintf("RGB Level: %d\n", level);
     if (level == RGB_OFF) {
         rgb_brightness = 0;
     }
@@ -177,9 +181,19 @@ void rgb_refresh(void)
     uint8_t i;
     if (rgb_rainbow) {
         for (i = 0; i < RGB_LED_COUNT; i++) {
+#ifdef VER_PROTOTYPE
+            uint8_t j;
+            if (i == 0) j = 1;
+            else if (i == 1) j = 0;
+            else j = i;
+#endif
             hue = rgb_hue + (768 / RGB_LED_COUNT) * i;
             hsb_to_rgb(hue, rgb_saturation, rgb_brightness, &rgb);
+#ifdef VER_PROTOTYPE
+            rgb_color[j] = rgb;
+#else
             rgb_color[i] = rgb;
+#endif
         }
     }
     else {
@@ -188,6 +202,7 @@ void rgb_refresh(void)
             rgb_color[i] = rgb;
         }
     }
+    /* xprintf("R%d G%d B%d\n", rgb_color[0].r, rgb_color[0].g, rgb_color[0].b); */
     ws2812_setleds(rgb_color, RGB_LED_COUNT);
 }
 

@@ -39,7 +39,7 @@
 #----------------------------------------------------------------------------
 
 # Target file name (without extension).
-TARGET = RedScarfII_lufa
+TARGET = cw40_lufa
 
 # Directory common source filess exist
 TMK_DIR = ../../tmk_core_custom
@@ -51,16 +51,19 @@ TARGET_DIR = .
 SRC =	keymap_common.c \
 	matrix.c \
 	led.c \
-	backlight.c \
 	ledmap.c \
-	yc059.c \
-	rgb.c \
-	suspend.c
+	backlight.c \
+	light_ws2812.c \
+	rgb.c
 
 ifdef KEYMAP
     SRC := keymap_$(KEYMAP).c $(SRC)
 else
     SRC := keymap_default.c $(SRC)
+endif
+
+ifdef VER
+    OPT_DEFS += -DVER_$(VER)
 endif
 
 
@@ -105,7 +108,7 @@ ARCH = AVR8
 F_USB = $(F_CPU)
 
 # Interrupt driven control endpoint task(+60)
-OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT -DREDSCARFII_PLUS
+OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT
 
 
 # Boot Section Size in *bytes*

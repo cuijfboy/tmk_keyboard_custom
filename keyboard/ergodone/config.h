@@ -1,5 +1,5 @@
 /*
-Copyright 2015 Kai Ryu <kai1103@gmail.com>
+Copyright 2016 Kai Ryu <kai1103@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,19 +21,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* USB Device descriptor parameter */
 #define VENDOR_ID       0x1209
-#define PRODUCT_ID      0x2333
-#define DEVICE_VER      0x0104
+#define PRODUCT_ID      0x2328
+#ifdef VER_PROTOTYPE
+#define DEVICE_VER      0x0300
+#else
+#define DEVICE_VER      0x0301
+#endif
 #define MANUFACTURER    K.T.E.C.
-#define PRODUCT         Staryu
-#define DESCRIPTION     t.m.k. keyboard firmware for Staryu
+#define PRODUCT         ErgoDone
+#define DESCRIPTION     t.m.k. keyboard firmware for ErgoDone
 
 /* key matrix size */
-#define MATRIX_ROWS 1
-#define MATRIX_COLS 5
+#define MATRIX_ROWS 6
+#define MATRIX_COLS 14
 
 /* keymap in eeprom */
 #define FN_ACTIONS_COUNT 32
-#define KEYMAPS_COUNT 32
+#define KEYMAPS_COUNT 3
+#define EECONFIG_KEYMAP_IN_EEPROM 17
 
 /* define if matrix has ghost */
 //#define MATRIX_HAS_GHOST
@@ -42,12 +47,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DEBOUNCE    5
 
 /* number of backlight levels */
-#define BACKLIGHT_LEVELS 7
-#define CUSTOM_LED_ENABLE
-#define RGB_LED_ENABLE
+#ifdef BREATHING_LED_ENABLE
+#ifdef FADING_LED_ENABLE
+#define BACKLIGHT_LEVELS 8
+#else
+#define BACKLIGHT_LEVELS 6
+#endif
+#else
+#define BACKLIGHT_LEVELS 3
+#endif
 
-/* number of LEDs */
-#define LED_COUNT 6
+/* number of leds */
+#define LED_COUNT 5
 
 /* Mechanical locking support. Use KC_LCAP, KC_LNUM or KC_LSCR instead in keymap */
 #define LOCKING_SUPPORT_ENABLE
@@ -60,6 +71,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     keyboard_report->mods == (MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_RSHIFT)) \
 )
 
+/* for debug */
+//#define SUART_OUT_PORT  PORTF
+//#define SUART_OUT_BIT   5
+//#define SUART_IN_PIN    PINF
+//#define SUART_IN_BIT    6
 
 /*
  * Feature disable options
@@ -78,5 +94,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define NO_ACTION_ONESHOT
 //#define NO_ACTION_MACRO
 //#define NO_ACTION_FUNCTION
+
+//#define NO_SUSPEND_POWER_DOWN
 
 #endif

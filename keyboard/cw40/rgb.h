@@ -1,5 +1,5 @@
 /*
-Copyright 2015 Kai Ryu <kai1103@gmail.com>
+Copyright 2016 Kai Ryu <kai1103@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -43,9 +43,9 @@ enum {
     RGB_LEVELS = RGB_RAINBOW
 };
 
-#define EECONFIG_RGB (uint8_t *)7
+#define EECONFIG_RGB (uint8_t *)10
 #define RGB_UNCONFIGURED 0xFF
-#define RGB_LED_COUNT 16
+#define RGB_LED_COUNT 12
 
 void rgb_init(void);
 void rgb_toggle(void);
