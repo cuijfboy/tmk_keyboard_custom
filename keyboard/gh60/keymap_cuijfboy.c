@@ -47,7 +47,7 @@ const uint8_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM = {
      * |-----------------------------------------------------------|
      * |Fn1   |  A|  S|  D|  F|  G|  H|  J|  K|  L|  ;|  '|Return  |
      * |-----------------------------------------------------------|
-     * |Shift   |  Z|  X|  C|  V|  B|  N|  M|  ,|  .|  /|Up |Delete|
+     * |Shift   |  Z|  X|  C|  V|  B|  N|  M|  ,|  .|  /|Fn2  |Del |
      * |-----------------------------------------------------------|
      * |Ctrl|Alt |Gui |      Space             |Fn0 |Lef |Dwn |Rig |
      * `-----------------------------------------------------------'
@@ -56,7 +56,7 @@ const uint8_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM = {
         ESC, 1,   2,   3,   4,   5,   6,   7,   8,   9,   0,   MINS,EQL, BSLS,GRV,  \
         TAB, Q,   W,   E,   R,   T,   Y,   U,   I,   O,   P,   LBRC,RBRC,     BSPC, \
         FN1, A,   S,   D,   F,   G,   H,   J,   K,   L,   SCLN,QUOT,          ENT,  \
-        LSFT,     Z,   X,   C,   V,   B,   N,   M,   COMM,DOT, SLSH,     UP,  DEL,  \
+        LSFT,     Z,   X,   C,   V,   B,   N,   M,   COMM,DOT, SLSH,     FN2, DEL,  \
         LCTL,LALT,LGUI,          SPC,                          FN0, LEFT,DOWN,RGHT),
     /* Keymap 1: Fn Layer
      * ,-----------------------------------------------------------.
@@ -66,7 +66,7 @@ const uint8_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM = {
      * |-----------------------------------------------------------|
      * |      |Lef|Dow|Rig|   |Hom|Lef|Dow|Up |Rig|End|   |        |
      * |-----------------------------------------------------------|
-     * |        |Fn3|Fn2|Fn4|Prv|Ply|Nxt|Mut|VoD|VoU|   |PgU   |   |
+     * |       |Fn11|Fn10|Fn12|Prv|Ply|Nxt|Mut|VoD|VoU|   |PgU  |  |
      * |-----------------------------------------------------------|
      * |    |    |    |                        |    |Hom |PgD |End |
      * `-----------------------------------------------------------'
@@ -75,7 +75,7 @@ const uint8_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM = {
         TRNS,F1,  F2,  F3,  F4,  F5,  F6,  F7,  F8,  F9,  F10, F11, F12, TRNS,TRNS, \
         CAPS,PGUP,UP,  PGDN,TRNS,TRNS,TRNS,PGDN,PGUP,TRNS,TRNS,SLCK,PAUS,     TRNS, \
         TRNS,LEFT,DOWN,RGHT,TRNS,HOME,LEFT,DOWN,UP  ,RGHT,END, TRNS,          TRNS, \
-        TRNS,     FN3, FN2, FN4, MPRV,MPLY,MNXT,MUTE,VOLD,VOLU,TRNS,     PGUP,TRNS, \
+        TRNS,     FN11,FN10,FN12,MPRV,MPLY,MNXT,MUTE,VOLD,VOLU,TRNS,     PGUP,TRNS, \
         TRNS,TRNS,TRNS,          TRNS,                         TRNS,HOME,PGDN,END ),
 };
 
@@ -89,9 +89,10 @@ const uint16_t fn_actions[] PROGMEM = {
 #endif
     [0] = ACTION_LAYER_MOMENTARY(1),
     [1] = ACTION_LAYER_MOMENTARY(1),
-    [2] = ACTION_BACKLIGHT_TOGGLE(),
-    [3] = ACTION_BACKLIGHT_DECREASE(),
-    [4] = ACTION_BACKLIGHT_INCREASE(),
+    [2] = ACTION_MODS_TAP_KEY(MOD_RSFT, KC_UP),
+    [10] = ACTION_BACKLIGHT_TOGGLE(),
+    [11] = ACTION_BACKLIGHT_DECREASE(),
+    [12] = ACTION_BACKLIGHT_INCREASE(),
 };
 
 #ifdef KEYMAP_IN_EEPROM_ENABLE
